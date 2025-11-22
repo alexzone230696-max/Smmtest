@@ -5,7 +5,7 @@
     }
   },
   "rewrites": [
-    { "source": "/webapp/(.*)", "destination": "/webapp/$1" },
+    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/webapp/index.html" }
   ]
 }
