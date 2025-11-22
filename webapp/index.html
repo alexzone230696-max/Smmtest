@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>SMM Panel - WebApp</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: sans-serif; padding: 15px; }
+    .service { padding:8px;border:1px solid #ccc;margin-top:6px;border-radius:6px; }
+    button { padding:10px 14px;margin-top:10px; }
+  </style>
+</head>
+<body>
+
+<h2>SMM PANEL</h2>
+
+<div id="services">Загрузка услуг...</div>
+
+<h3>Создать заказ</h3>
+
+<select id="service"></select><br/><br/>
+<input id="link" placeholder="Ссылка" style="width:100%"><br/><br/>
+<input id="qty" type="number" value="100"><br/><br/>
+
+<button id="go">Создать заказ</button>
+
+<pre id="result"></pre>
+
+<script>
+async function loadServices(){
+  const r = await fetch("/api/services");
+  const data = await r.json();
+  
+  const sel = document.getElementById("service");
+  const div = document.getElementById("services");
+
+  sel.innerHTML = "";
+  div.innerHTML = "<b>Услуги:</b>";
+
+  data.forEach(s => {
+    let opt = document.createElement("option");
+    opt.value = s.service || s.id;
+    opt.textContent = `${s.name} (${s.rate})`;
+    sel.appendChild(opt);
+
+    let d = document.createElement("div");
+    d.className = "service";
+    d.textContent = opt.textContent;
+    div.appendChild(d);
+  });
+}
+
+document.getElementById("go").onclick = async () => {
+  const service = document.getElementById("service").value;
+  const link = document.getElementById("link").value;
+  const quantity = document.getElementById("qty").value;
+
+  const r = await fetch("/api/order", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ service, link, quantity })
+  });
+
+  const data = await r.json();
+  document.getElementById("result").textContent = JSON.stringify(data, null, 2);
+};
+
+loadServices();
+</script>
+
+</body>
+</html>
